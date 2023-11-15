@@ -1,0 +1,67 @@
+#!/usr/bin/env python3
+
+import os
+import subprocess
+import gi
+
+gi.require_version("Gtk", "3.0")
+from gi.repository import Gtk
+
+class TwoFactorWindow(Gtk.Window):
+    def __init__(self, names):
+        super().__init__(title="2FA")
+        self.set_size_request(300, 500)
+
+        self.sw = Gtk.ScrolledWindow()
+
+        self.grid = Gtk.Grid()
+        self.grid.set_row_spacing(10)
+        self.grid.set_column_spacing(0)
+        self.grid.set_border_width(10)
+
+        for nrow in range(0, len(names)):
+            name = names[nrow]
+            btn = TwoFactorItem(name=name)
+            self.grid.attach(btn, 0, nrow, 1, 1)
+
+        self.sw.add(self.grid)
+        self.add(self.sw)
+
+class TwoFactorItem(Gtk.Box):
+    def __init__(self, name):
+        super().__init__(spacing=6)
+        self.app_name = name
+        self.button = Gtk.Button(label=name)
+        self.button.connect("clicked", self.clicked)
+        self.button.set_size_request(100, 30)
+        self.pack_start(self.button, False, False, 0)
+
+        self.label = Gtk.Label()
+        self.label.set_size_request(100, 30)
+        self.label.set_selectable(True)
+        self.pack_start(self.label, False, False, 0)
+
+    def clicked(self, widget):
+        result = get_code(self.app_name)
+        print("app:", self.app_name, "code:", result)
+
+        self.label.set_markup('<span font_family="monospace" size="large">' + result + '</span>')
+
+def get_2fa_names():
+    result = subprocess.check_output(['2fa', '-list'])
+    names = result.decode('utf-8').strip().split('\n')
+    names.sort()
+    return names
+
+def get_code(app_name):
+    result = subprocess.check_output(['2fa', '-clip', app_name])
+    return result.decode('utf-8').strip()
+
+def main():
+    names = get_2fa_names()
+    win = TwoFactorWindow(names=names)
+    win.connect("destroy", Gtk.main_quit)
+    win.show_all()
+    Gtk.main()
+
+main()

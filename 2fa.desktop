@@ -1,0 +1,7 @@
+#!/usr/bin/env xdg-open
+[Desktop Entry]
+Icon=lock
+Name=2FA
+Exec=2fa-gui
+Type=Application
+Keywords=2fa;

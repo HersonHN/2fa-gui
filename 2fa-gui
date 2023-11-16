@@ -7,11 +7,18 @@ import gi
 gi.require_version("Gtk", "3.0")
 from gi.repository import Gtk
 
+def main():
+    names = get_2fa_names()
+    win = TwoFactorWindow(names=names)
+    win.connect("destroy", Gtk.main_quit)
+    win.show_all()
+    Gtk.main()
+
 class TwoFactorWindow(Gtk.Window):
     def __init__(self, names):
         super().__init__(title="2FA")
         self.set_size_request(250, 300)
-        self.resize(300, 500)
+        self.resize(250, 400)
         self.set_position(Gtk.WindowPosition.CENTER)
 
         self.sw = Gtk.ScrolledWindow()
@@ -21,10 +28,9 @@ class TwoFactorWindow(Gtk.Window):
         self.grid.set_column_spacing(0)
         self.grid.set_border_width(10)
 
-        for nrow in range(0, len(names)):
-            name = names[nrow]
-            btn = TwoFactorItem(name=name)
-            self.grid.attach(btn, 0, nrow, 1, 1)
+        for nrow, name in enumerate(names):
+            item = TwoFactorItem(name=name)
+            self.grid.attach(item, 0, nrow, 1, 1)
 
         self.sw.add(self.grid)
         self.add(self.sw)
@@ -58,12 +64,5 @@ def get_2fa_names():
 def get_code(app_name):
     result = subprocess.check_output(['2fa', '-clip', app_name])
     return result.decode('utf-8').strip()
-
-def main():
-    names = get_2fa_names()
-    win = TwoFactorWindow(names=names)
-    win.connect("destroy", Gtk.main_quit)
-    win.show_all()
-    Gtk.main()
 
 main()

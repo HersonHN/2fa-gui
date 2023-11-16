@@ -10,7 +10,9 @@ from gi.repository import Gtk
 class TwoFactorWindow(Gtk.Window):
     def __init__(self, names):
         super().__init__(title="2FA")
-        self.set_size_request(300, 500)
+        self.set_size_request(250, 300)
+        self.resize(300, 500)
+        self.set_position(Gtk.WindowPosition.CENTER_ALWAYS)
 
         self.sw = Gtk.ScrolledWindow()
 

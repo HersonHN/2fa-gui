@@ -6,17 +6,30 @@ import sys
 import gi
 
 gi.require_version("Gtk", "4.0")
-gi.require_version('Adw', '1')
-from gi.repository import Gtk, Adw
+from gi.repository import Gtk
 
+
+def main():
+    app = TwoFactorApp(application_id="com.hersonhn.TwoFactorGui")
+    app.run(sys.argv)
+
+class TwoFactorApp(Gtk.Application):
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        self.connect('activate', self.on_activate)
+
+    def on_activate(self, app):
+        names = get_2fa_names()
+        self.win = TwoFactorWindow(names=names, application=app)
+        self.win.present()
 
 class TwoFactorWindow(Gtk.ApplicationWindow):
     def __init__(self, names, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.set_size_request(300, 500)
+        self.set_size_request(250, 300)
+        self.set_default_size(250, 400)
 
         self.sw = Gtk.ScrolledWindow()
-
         self.grid = Gtk.Grid()
         self.grid.set_row_spacing(10)
         self.grid.set_column_spacing(0)
@@ -25,10 +38,9 @@ class TwoFactorWindow(Gtk.ApplicationWindow):
         self.grid.set_margin_start(10)
         self.grid.set_margin_top(10)
 
-        for nrow in range(0, len(names)):
-            name = names[nrow]
-            btn = TwoFactorItem(name=name)
-            self.grid.attach(btn, 0, nrow, 1, 1)
+        for nrow, name in enumerate(names):
+            item = TwoFactorItem(name=name)
+            self.grid.attach(item, 0, nrow, 1, 1)
 
         self.sw.set_child(self.grid)
         self.set_child(self.sw)
@@ -63,16 +75,4 @@ def get_code(app_name):
     result = subprocess.check_output(['2fa', '-clip', app_name])
     return result.decode('utf-8').strip()
 
-
-class MyApp(Adw.Application):
-    def __init__(self, **kwargs):
-        super().__init__(**kwargs)
-        self.connect('activate', self.on_activate)
-
-    def on_activate(self, app):
-        names = get_2fa_names()
-        self.win = TwoFactorWindow(names=names, application=app)
-        self.win.present()
-
-app = MyApp(application_id="com.example.GtkApplication")
-app.run(sys.argv)
+main()

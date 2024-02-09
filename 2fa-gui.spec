@@ -34,11 +34,11 @@ exe = EXE(
     target_arch=None,
     codesign_identity=None,
     entitlements_file=None,
-    icon=['Resources/AppIcon.icns'],
+    icon=['assets/AppIcon.icns'],
 )
 app = BUNDLE(
     exe,
     name='2fa-gui.app',
-    icon='./Resources/AppIcon.icns',
-    bundle_identifier=None,
+    icon='./assets/AppIcon.icns',
+    bundle_identifier='com.herson.TwoFactorGui',
 )

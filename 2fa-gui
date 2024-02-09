@@ -51,7 +51,6 @@ class TwoFactorItem(Gtk.Box):
 
     def clicked(self, widget):
         result = get_code(self.app_name)
-        print("app:", self.app_name, "code:", result)
 
         self.label.set_markup('<span font_family="monospace" size="large">' + result + '</span>')
 

@@ -55,13 +55,15 @@ class TwoFactorItem(Gtk.Box):
         self.label.set_markup('<span font_family="monospace" size="large">' + result + '</span>')
 
 def get_2fa_names():
-    result = subprocess.check_output(['2fa', '-list'])
+    my_env = os.environ.copy()
+    result = subprocess.check_output(['2fa', '-list'], env=my_env)
     names = result.decode('utf-8').strip().split('\n')
     names.sort()
     return names
 
 def get_code(app_name):
-    result = subprocess.check_output(['2fa', '-clip', app_name])
+    my_env = os.environ.copy()
+    result = subprocess.check_output(['2fa', '-clip', app_name], env=my_env)
     return result.decode('utf-8').strip()
 
 main()
